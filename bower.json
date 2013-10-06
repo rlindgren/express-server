@@ -1,0 +1,10 @@
+{
+  "name": "express-server",
+  "version": "0.0.1",
+  "dependencies": {
+    "d3": "latest",
+    "jquery": "latest",
+    "underscore": "latest",
+    "bootstrap": "*"
+  }
+}

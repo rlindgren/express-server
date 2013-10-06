@@ -1,0 +1,26 @@
+{
+  "name": "express-server",
+  "description": "a simple javascript web server.",
+  "version": "0.0.1",
+  "private": true,
+  "author": {
+    "name": "Ryan Lindgren",
+    "email": "ryan.lindgren@gmail.com",
+    "url": "http://www.ryanlindgren.com/"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  },
+  "scripts": {
+    "start": "NODE_ENV=development ./node_modules/.bin/forever -m 5 express-server.js",
+    "postinstall": "./node_modules/.bin/bower install"
+  },
+  "dependencies": {
+    "express": "*",
+    "underscore": "*",
+    "bower": "*",
+    "forever": "*",
+    "ejs": "*"
+  }
+}
