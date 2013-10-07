@@ -53,12 +53,12 @@ The base directory is the `public` directory.  All relative paths used within se
         html5shiv.js              --> loaded by <=IE8
       .bowerrc                    --> config tells Bower where to put downloaded dependencies
       .gitignore                  --> tell git to ignore some files
-      bower.json                  --> manage our front-end dependencies with [Bower](http://www.bower.io)
+      bower.json                  --> manage front-end dependencies with [Bower](http://www.bower.io)
       express-config.js           --> configuration for Express
       express-routes.js           --> application routes definitions
       express-server.js           --> our server
       package.json                --> package.json (all node packages have one)
-      Procfile                    --> Procfile (so you can push your app to [heroku](http://www.heroku.com))
+      Procfile                    --> Procfile (push your app to [heroku](http://www.heroku.com))
       README.md                   --> the document you are currently reading....
 
 This documentation is a 'bare minimum' implementation... sorry if it's not sufficient.

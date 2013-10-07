@@ -1,11 +1,11 @@
 var fs = require('fs')
-	,	express = require('express')
-	,	app = express()
-  ,	server = require('http').createServer(app)
-	,	pkg = JSON.parse(fs.readFileSync('./package.json'));
+  , express = require('express')
+  , app = express()
+  , server = require('http').createServer(app)
+  , pkg = JSON.parse(fs.readFileSync('./package.json'));
 
 var config = require('./express-config')
-	,	routes = require('./express-routes');
+  , routes = require('./express-routes');
 
 // bootstrap the app
 config(express, app); // load express server config & middleware
