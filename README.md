@@ -8,21 +8,19 @@ The base directory is the `public` directory.  All relative paths used within se
 ## Prerequisites
 
 ### Node.js
-- Generic [installation instructions][node-generic].
-- Mac DMG [here][node-mac]
-- Windows download from [here][node-windows]. (You will also need [7 Zip] to unzip the node archive)
-  (and don't forget to add `node.exe` to  your executable path)
+- Install [Node.js](http://www.nodejs.org). Follow instructions on their site.
+- For Windows: you will also need [7 Zip] to unzip the node archive.
+  (and don't forget to add `node.exe` to your executable path)
 
 ## Server Set-up
 
-- When you clone the repository, navigate to the newly created directory and run `npm install` command.
-- You may need to run `bower install` as well, if it was not run automatically after `npm install`.
-  -- Check whether or not there is a `d3` folder inside of `public/lib`. If not, run `bower install`.
-
+    git clone https://github.com/tathata/express-server.git && cd express-server
+    npm install
+    
 ### Running the App During Development
 
-1. run `npm start` to launch the server and listen on port 8000
-2. navigate your browser to `http://localhost:8000/` to see the result of serving the index page (index.html).
+1. `npm start` launches the server and starts it listening on port 8000.
+2. navigate your browser to `http://localhost:8000/`.
 
 ## Application Directory Layout
 
