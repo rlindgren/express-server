@@ -5,6 +5,8 @@
 This web server is written in Javascript with [ExpressJS](http://www.expressjs.com/).
 The base directory is the `public` directory.  All relative paths used within served documents will be resolved to this directory.
 
+`index.html` serves as a, kind of, very basic introduction to client-side javascript, HTML, and CSS, with the inclusion of some very neat code from the collection of [Mike Bostock](https://github.com/mbostock).
+
 ## Prerequisites
 
 ### Node.js
@@ -16,7 +18,7 @@ The base directory is the `public` directory.  All relative paths used within se
 
     git clone https://github.com/tathata/express-server.git && cd express-server
     npm install
-    
+
 ### Running the App During Development
 
 1. `npm start` launches the server and starts it listening on port 8000.
