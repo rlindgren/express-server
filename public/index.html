@@ -32,29 +32,29 @@
 			}
 
 			body {
-			  margin: 0;
+				margin: 0;
 			}
 
 			.map {
-			  position: relative;
-			  overflow: hidden;
+				position: relative;
+				overflow: hidden;
 			}
 
 			.layer {
-			  position: absolute;
+				position: absolute;
 			}
 
 			.tile {
-			  pointer-events: none;
-			  position: absolute;
-			  width: 256px;
-			  height: 256px;
+				pointer-events: none;
+				position: absolute;
+				width: 256px;
+				height: 256px;
 			}
 
 			.info {
-			  position: absolute;
-			  bottom: 10px;
-			  left: 10px;
+				position: absolute;
+				bottom: 10px;
+				left: 10px;
 			}
 
 		</style>
@@ -63,131 +63,165 @@
 		<!-- this is an HTML comment in the body of the document -->
 		<h1 id="heading"></h1>
 		<h3>Click the image below</h3>
+		<script type="text/javascript">
+			/**
+			 * javascript can be loaded inline like this (within <script> tags),
+			 * or like above (with `src` defined).
+			 * javascripts that manipulate DOM should be included at the end of the document
+			 *
+			 * this is 'vanilla' javascript.
+			 * You can select an element by ID using jQuery like this `$('#heading')`, then you
+			 * get an object that is all wrapped up in the jQuery selection object, so you get
+			 * all of it's methods.
+			 */
+
+			var heading = document.getElementById('heading');
+			heading.innerText = "This text was set by javascript, but the element was already defined in HTML";
+
+			var heading2 = document.createElement('h2');
+			var elText = "This 'h2' element was created entirely in javascript. Mouseover me!";
+			heading2.innerText = elText;
+			// need to `appendChild`, or other similar method, in order to
+			// actually insert the created element into the DOM.
+			document.body.appendChild(heading2);
+			// `getElementsByTagName` to return an array of DOM nodes by tagname. (plural)
+			// `getElementById` to return a single element based on it's id. (singular)
+			// `getElementsByClassName` to return an array of elements with the same class (plural)
+
+			// javascript makes heavy use of events and event handlers, here's an example.
+			heading2.addEventListener('mouseover', function (event) {
+				// `this`, here, refers to the element that is listening for the `mouseover` event
+				this.innerText = "I've been moused over!";
+				// log the event object to the console to inspect it if you'd like
+				console.log(event);
+			});
+			heading2.addEventListener('mouseout', function (event) {
+				this.innerText = elText;
+			});
+
+			// add an image element to the document and set a click event handler that adds
+			// new elements to the DOM tree, dynamically.  You should open Chrome DevTools
+			// and inspect the elements on the page as you click the image.
+			var image = document.createElement('img');
+			image.setAttribute('src', '/img/lobby.png');
+			image.setAttribute('id', 'image');
+			// this is setting a 'landing area', or whatever, where we'll catch the new elements.
+			// it's perhaps the most basic method for establishing order in HTML documents;
+			// encapsulate with container elements! =)
+			// so, in the event handler we will create a new element and append it as a child
+			// to the `#mark` element, thereby filling the container element with new elements
+			var mark = document.createElement('div');
+			mark.setAttribute('id', 'mark');
+			document.body.appendChild(image);
+			document.body.appendChild(mark);
+			// here is the actual click handler registration on the <img> element we created earlier
+			image.addEventListener('click', function (event) {
+				var someText = document.createElement('p');
+				// using the data provided you by the event object
+				someText.innerText = "Clicked the image at: " +
+					event.screenX + " : " + event.screenY + ".";
+				mark.appendChild(someText); // append the new element
+			});
+		</script>
+		<script src="http://d3js.org/d3.geo.tile.v0.min.js"></script>
+		<script>
+
+			Array.prototype.random = function () { return this[ Math.random() * this.length | 0 ] };
+
+			/**
+			 * code from http://bl.ocks.org/mbostock/4132797
+			 * Author: Mike Bostock
+			 *
+			 * I've actually modified some bits of it.... sorry Mike.
+			 * For example, the function above this comment is method of extending
+			 * the prototype of a class.  This should be used in your own OOP,
+			 * but I don't see the harm in extending `Array`s prototype to include
+			 * a `random` method, since Mike has shown us such a neat trick for
+			 * getting a member of an array at random. The logic for the function
+			 * comes from the following code. check the link.
+			 */
+
+			var width = 960,
+					height = 500,
+					prefix = prefixMatch(["webkit", "ms", "Moz", "O"]);
+
+			var tile = d3.geo.tile()
+					.size([width, height]);
+
+			var projection = d3.geo.mercator();
+
+			var zoom = d3.behavior.zoom()
+					.scale(1 << 12)
+					.scaleExtent([1 << 9, 1 << 23])
+					.translate([width / 2, height / 2])
+					.on("zoom", zoomed);
+
+			var map = d3.select("body").append("div")
+					.attr("class", "map")
+					.style("width", width + "px")
+					.style("height", height + "px")
+					.call(zoom)
+					.on("mousemove", mousemoved);
+
+			var layer = map.append("div")
+					.attr("class", "layer");
+
+			var info = map.append("div")
+					.attr("class", "info");
+
+			zoomed();
+
+			function zoomed() {
+				var tiles = tile
+						.scale(zoom.scale())
+						.translate(zoom.translate())
+						();
+
+				projection
+						.scale(zoom.scale() / 2 / Math.PI)
+						.translate(zoom.translate());
+
+				var image = layer
+						.style(prefix + "transform", matrix3d(tiles.scale, tiles.translate))
+					.selectAll(".tile")
+						.data(tiles, function(d) { return d; });
+
+				image.exit()
+						.remove();
+
+				image.enter().append("img")
+						.attr("class", "tile")
+						.attr("src", function(d) {
+							console.log(d);
+							return "http://" + ["a", "b", "c", "d"].random() +
+							".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] +
+							"/" + d[1] + ".png";
+						})
+						.style("left", function(d) { return (d[0] << 8) + "px"; })
+						.style("top", function(d) { return (d[1] << 8) + "px"; });
+			}
+
+			function mousemoved() {
+				info.text(formatLocation(projection.invert(d3.mouse(this)), zoom.scale()));
+			}
+
+			function matrix3d(scale, translate) {
+				var k = scale / 256, r = scale % 1 ? Number : Math.round;
+				return "matrix3d(" + [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r(translate[0] * scale), r(translate[1] * scale), 0, 1 ] + ")";
+			}
+
+			function prefixMatch(p) {
+				var i = -1, n = p.length, s = document.body.style;
+				while (++i < n) if (p[i] + "Transform" in s) return "-" + p[i].toLowerCase() + "-";
+				return "";
+			}
+
+			function formatLocation(p, k) {
+				var format = d3.format("." + Math.floor(Math.log(k) / 2 - 2) + "f");
+				return (p[1] < 0 ? format(-p[1]) + "°S" : format(p[1]) + "°N") + " "
+						 + (p[0] < 0 ? format(-p[0]) + "°W" : format(p[0]) + "°E");
+			}
+
+		</script>
 	</body>
-	<script type="text/javascript">
-		/**
-		 * javascript can be loaded inline like this (within <script> tags),
-		 * or like above (with `src` defined).
-		 * javascripts that manipulate DOM should be included at the end of the document (after <body>)
-		 *
-		 * this is 'vanilla' javascript.
-		 * You can select an element using jQuery like this `$('#heading')`
-		 */
-
-		var heading = document.getElementById('heading');
-		heading.innerText = "This text was set by javascript, but the element was already defined in HTML";
-
-		var heading2 = document.createElement('h2');
-		var elText = "This 'h2' element was created entirely in javascript. Mouseover me!";
-		heading2.innerText = elText;
-		// need to `appendChild`, or other similar method, in order to
-		// actually insert the created element into the DOM.
-		// `getElementsByTagName` returns an array of DOM nodes (hence the pluralized method name)
-		document.getElementsByTagName('body')[0].appendChild(heading2);
-
-		// javascript makes heavy use of events and event handlers, here's an example.
-		heading2.addEventListener('mouseover', function (event) {
-			// `this`, here, refers to the element that is listening for the `mouseover` event
-			this.innerText = "I've been moused over!";
-			// log the event object to the console to inspect it
-			console.log(event);
-		});
-		heading2.addEventListener('mouseout', function (event) {
-			this.innerText = elText;
-		});
-
-		// add an image element to the document and set some event handlers (for fun...)
-		var image = document.createElement('img');
-		image.setAttribute('src', '/img/gay.jpg');
-		document.body.appendChild(image);
-
-		image.addEventListener('click', function (event) {
-			console.log(event);
-			var someText = document.createElement('p');
-			someText.innerText = "Added a new element to the DOM tree.";
-			document.body.appendChild(someText);
-		})
-	</script>
-<body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/d3.geo.tile.v0.min.js"></script>
-<script>
-
-	var width = Math.max(960, window.innerWidth),
-	    height = Math.max(500, window.innerHeight),
-	    prefix = prefixMatch(["webkit", "ms", "Moz", "O"]);
-
-	var tile = d3.geo.tile()
-	    .size([width, height]);
-
-	var projection = d3.geo.mercator();
-
-	var zoom = d3.behavior.zoom()
-	    .scale(1 << 12)
-	    .scaleExtent([1 << 9, 1 << 23])
-	    .translate([width / 2, height / 2])
-	    .on("zoom", zoomed);
-
-	var map = d3.select("body").append("div")
-	    .attr("class", "map")
-	    .style("width", width + "px")
-	    .style("height", height + "px")
-	    .call(zoom)
-	    .on("mousemove", mousemoved);
-
-	var layer = map.append("div")
-	    .attr("class", "layer");
-
-	var info = map.append("div")
-	    .attr("class", "info");
-
-	zoomed();
-
-	function zoomed() {
-	  var tiles = tile
-	      .scale(zoom.scale())
-	      .translate(zoom.translate())
-	      ();
-
-	  projection
-	      .scale(zoom.scale() / 2 / Math.PI)
-	      .translate(zoom.translate());
-
-	  var image = layer
-	      .style(prefix + "transform", matrix3d(tiles.scale, tiles.translate))
-	    .selectAll(".tile")
-	      .data(tiles, function(d) { return d; });
-
-	  image.exit()
-	      .remove();
-
-	  image.enter().append("img")
-	      .attr("class", "tile")
-	      .attr("src", function(d) { console.log(d); return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-	      .style("left", function(d) { return (d[0] << 8) + "px"; })
-	      .style("top", function(d) { return (d[1] << 8) + "px"; });
-	}
-
-	function mousemoved() {
-	  info.text(formatLocation(projection.invert(d3.mouse(this)), zoom.scale()));
-	}
-
-	function matrix3d(scale, translate) {
-	  var k = scale / 256, r = scale % 1 ? Number : Math.round;
-	  return "matrix3d(" + [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r(translate[0] * scale), r(translate[1] * scale), 0, 1 ] + ")";
-	}
-
-	function prefixMatch(p) {
-	  var i = -1, n = p.length, s = document.body.style;
-	  while (++i < n) if (p[i] + "Transform" in s) return "-" + p[i].toLowerCase() + "-";
-	  return "";
-	}
-
-	function formatLocation(p, k) {
-	  var format = d3.format("." + Math.floor(Math.log(k) / 2 - 2) + "f");
-	  return (p[1] < 0 ? format(-p[1]) + "°S" : format(p[1]) + "°N") + " "
-	       + (p[0] < 0 ? format(-p[0]) + "°W" : format(p[0]) + "°E");
-	}
-
-</script>
 </html>
